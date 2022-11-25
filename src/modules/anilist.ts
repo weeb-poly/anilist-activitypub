@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request';
 
-const client = new GraphQLClient("https://graphql.anilist.co");
+const AniListClient = new GraphQLClient("https://graphql.anilist.co");
 
-export { client };
+export { AniListClient };

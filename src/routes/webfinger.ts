@@ -1,6 +1,8 @@
 import express from 'express';
 import { GraphQLClient } from 'graphql-request';
 
+import { getSdk } from '../__generated__/sdk';
+
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -13,40 +15,41 @@ router.get('/', async (req, res) => {
               .send('Bad request. Please make sure "acct:USER@DOMAIN" is what you are sending as the "resource" query parameter.');
   }
 
-  const name = resource.slice(5, -1-hostname.length);
+  const name = parseInt(resource.slice(5, -1-hostname.length));
 
-  const GqlQuery = `
-  query ($id: Int!) {
-    User (id: $id) {
-      id
-      siteUrl
-    }
-  }
-  `;
-
-  interface TData {
-    User: { id: number; siteUrl: string }
+  if (name === NaN) {
+    return res.status(400)
+              .send('Bad request. Please make sure "acct:USER@DOMAIN" is what you are sending as the "resource" query parameter.');
   }
 
-  const anilist = req.app.get('anilist') as GraphQLClient;
-  const data = await anilist.request<TData>(GqlQuery, { "id": name });
+  const AniListClient = req.app.get('AniListClient') as GraphQLClient;
+  const AniListSdk = getSdk(AniListClient);
 
-  return res.type('application/jrd+json').json({
+  const data = await AniListSdk.getUserWebFinger({ id: name });
+
+  if (data.User === null) {
+    return res.status(400)
+              .send('No User Found.');
+  }
+
+  const result = {
     "subject": `acct:${data.User.id}@${hostname}`,
-    "aliases": [ data.User.siteUrl ],
+    "aliases": [ data.User.siteUrl ].filter(e => e !== null),
     "links": [
-      {
+      (data.User.siteUrl !== null) ? {
         "rel": "http://webfinger.net/rel/profile-page",
         "type": "text/html",
         "href": data.User.siteUrl
-      },
+      } : null,
       {
         "rel": "self",
         "type": "application/activity+json",
         "href": `https://${hostname}/user/${data.User.id}`
       }
-    ]
-  });
+    ].filter(e => e !== null)
+  };
+
+  return res.type('application/jrd+json').json(result);
 });
 
 export { router };

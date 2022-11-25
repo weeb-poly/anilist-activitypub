@@ -1,0 +1,17 @@
+query getActivity($id: Int!) {
+  Activity(id: $id) {
+    __typename
+    ... on TextActivity {
+      id
+      siteUrl
+    }
+    ... on ListActivity {
+      id
+      siteUrl
+    }
+    ... on MessageActivity {
+      id
+      siteUrl
+    }
+  }
+}

@@ -1,0 +1,62 @@
+query getUserPerson($id: Int!) {
+  User (id: $id) {
+    id
+    name
+    avatar {
+      large
+    }
+    bannerImage
+  }
+}
+
+query getUserFollowing($id: Int!, $page: Int) {
+  Page(page: $page) {
+    pageInfo {
+      total
+      currentPage
+      hasNextPage
+    }
+    following(userId: $id) {
+      id
+    }
+  }
+}
+
+query getUserFollowers($id: Int!, $page: Int) {
+  Page(page: $page) {
+    pageInfo {
+      total
+      currentPage
+      hasNextPage
+    }
+    followers(userId: $id) {
+      id
+    }
+  }
+}
+
+query getUserOutbox($id: Int!, $page: Int) {
+  Page(page: $page) {
+    pageInfo {
+      total
+      currentPage
+      lastPage
+      hasNextPage
+    }
+    activities(userId: $id) {
+      __typename
+      ... on TextActivity {
+        id
+        siteUrl
+      }
+      ... on ListActivity {
+        id
+        siteUrl
+      }
+      ... on MessageActivity {
+        id
+        siteUrl
+      }
+    }
+  }
+}

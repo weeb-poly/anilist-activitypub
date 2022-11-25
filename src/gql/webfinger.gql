@@ -1,0 +1,6 @@
+query getUserWebFinger($id: Int!) {
+  User (id: $id) {
+    id
+    siteUrl
+  }
+}
