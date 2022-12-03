@@ -4667,6 +4667,13 @@ export type YearStats = {
   year: Maybe<Scalars['Int']>;
 };
 
+export type GetActivityQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type GetActivityQuery = { __typename?: 'Query', Activity: { __typename: 'ListActivity', id: number, siteUrl: string | null } | { __typename: 'MessageActivity', id: number, siteUrl: string | null } | { __typename: 'TextActivity', id: number, siteUrl: string | null } | null };
+
 export type GetUserPersonQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
@@ -4680,7 +4687,7 @@ export type GetUserFollowingQueryVariables = Exact<{
 }>;
 
 
-export type GetUserFollowingQuery = { __typename?: 'Query', Page: { __typename?: 'Page', pageInfo: { __typename?: 'PageInfo', total: number | null, perPage: number | null, currentPage: number | null, lastPage: number | null, hasNextPage: boolean | null } | null, following: Array<{ __typename?: 'User', id: number } | null> | null } | null };
+export type GetUserFollowingQuery = { __typename?: 'Query', Page: { __typename?: 'Page', pageInfo: { __typename?: 'PageInfo', total: number | null, currentPage: number | null, hasNextPage: boolean | null } | null, following: Array<{ __typename?: 'User', id: number } | null> | null } | null };
 
 export type GetUserFollowersQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -4688,7 +4695,7 @@ export type GetUserFollowersQueryVariables = Exact<{
 }>;
 
 
-export type GetUserFollowersQuery = { __typename?: 'Query', Page: { __typename?: 'Page', pageInfo: { __typename?: 'PageInfo', total: number | null, perPage: number | null, currentPage: number | null, lastPage: number | null, hasNextPage: boolean | null } | null, followers: Array<{ __typename?: 'User', id: number } | null> | null } | null };
+export type GetUserFollowersQuery = { __typename?: 'Query', Page: { __typename?: 'Page', pageInfo: { __typename?: 'PageInfo', total: number | null, currentPage: number | null, hasNextPage: boolean | null } | null, followers: Array<{ __typename?: 'User', id: number } | null> | null } | null };
 
 export type GetUserOutboxQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -4696,7 +4703,7 @@ export type GetUserOutboxQueryVariables = Exact<{
 }>;
 
 
-export type GetUserOutboxQuery = { __typename?: 'Query', Page: { __typename?: 'Page', pageInfo: { __typename?: 'PageInfo', total: number | null, perPage: number | null, currentPage: number | null, lastPage: number | null, hasNextPage: boolean | null } | null, activities: Array<{ __typename: 'ListActivity', id: number, siteUrl: string | null } | { __typename: 'MessageActivity', id: number, siteUrl: string | null } | { __typename: 'TextActivity', id: number, siteUrl: string | null } | null> | null } | null };
+export type GetUserOutboxQuery = { __typename?: 'Query', Page: { __typename?: 'Page', pageInfo: { __typename?: 'PageInfo', total: number | null, currentPage: number | null, lastPage: number | null, hasNextPage: boolean | null } | null, activities: Array<{ __typename: 'ListActivity', id: number, siteUrl: string | null, createdAt: number } | { __typename: 'MessageActivity', id: number, siteUrl: string | null, createdAt: number } | { __typename: 'TextActivity', id: number, siteUrl: string | null, createdAt: number } | null> | null } | null };
 
 export type GetUserWebFingerQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -4706,6 +4713,25 @@ export type GetUserWebFingerQueryVariables = Exact<{
 export type GetUserWebFingerQuery = { __typename?: 'Query', User: { __typename?: 'User', id: number, siteUrl: string | null } | null };
 
 
+export const GetActivityDocument = gql`
+    query getActivity($id: Int!) {
+  Activity(id: $id) {
+    __typename
+    ... on TextActivity {
+      id
+      siteUrl
+    }
+    ... on ListActivity {
+      id
+      siteUrl
+    }
+    ... on MessageActivity {
+      id
+      siteUrl
+    }
+  }
+}
+    `;
 export const GetUserPersonDocument = gql`
     query getUserPerson($id: Int!) {
   User(id: $id) {
@@ -4723,9 +4749,7 @@ export const GetUserFollowingDocument = gql`
   Page(page: $page) {
     pageInfo {
       total
-      perPage
       currentPage
-      lastPage
       hasNextPage
     }
     following(userId: $id) {
@@ -4739,9 +4763,7 @@ export const GetUserFollowersDocument = gql`
   Page(page: $page) {
     pageInfo {
       total
-      perPage
       currentPage
-      lastPage
       hasNextPage
     }
     followers(userId: $id) {
@@ -4755,24 +4777,26 @@ export const GetUserOutboxDocument = gql`
   Page(page: $page) {
     pageInfo {
       total
-      perPage
       currentPage
       lastPage
       hasNextPage
     }
-    activities(userId: $id) {
+    activities(userId: $id, sort: ID_DESC) {
       __typename
       ... on TextActivity {
         id
         siteUrl
+        createdAt
       }
       ... on ListActivity {
         id
         siteUrl
+        createdAt
       }
       ... on MessageActivity {
         id
         siteUrl
+        createdAt
       }
     }
   }
@@ -4794,6 +4818,9 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    getActivity(variables: GetActivityQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetActivityQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetActivityQuery>(GetActivityDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActivity', 'query');
+    },
     getUserPerson(variables: GetUserPersonQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserPersonQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetUserPersonQuery>(GetUserPersonDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserPerson', 'query');
     },

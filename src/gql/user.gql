@@ -43,19 +43,25 @@ query getUserOutbox($id: Int!, $page: Int) {
       lastPage
       hasNextPage
     }
-    activities(userId: $id) {
+    activities(
+      userId: $id,
+      sort: ID_DESC
+    ) {
       __typename
       ... on TextActivity {
         id
         siteUrl
+        createdAt
       }
       ... on ListActivity {
         id
         siteUrl
+        createdAt
       }
       ... on MessageActivity {
         id
         siteUrl
+        createdAt
       }
     }
   }

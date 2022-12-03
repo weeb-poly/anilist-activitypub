@@ -15,9 +15,9 @@ router.get('/', async (req, res) => {
               .send('Bad request. Please make sure "acct:USER@DOMAIN" is what you are sending as the "resource" query parameter.');
   }
 
-  const name = parseInt(resource.slice(5, -1-hostname.length));
+  const uid = parseInt(resource.slice(5, -1-hostname.length));
 
-  if (name === NaN) {
+  if (Number.isNaN(uid)) {
     return res.status(400)
               .send('Bad request. Please make sure "acct:USER@DOMAIN" is what you are sending as the "resource" query parameter.');
   }
@@ -25,7 +25,10 @@ router.get('/', async (req, res) => {
   const AniListClient = req.app.get('AniListClient') as GraphQLClient;
   const AniListSdk = getSdk(AniListClient);
 
-  const data = await AniListSdk.getUserWebFinger({ id: name });
+  const data = await AniListSdk.getUserWebFinger({ id: uid }).catch(err => {
+    console.error(err);
+    return { User: null };
+  });
 
   if (data.User === null) {
     return res.status(400)

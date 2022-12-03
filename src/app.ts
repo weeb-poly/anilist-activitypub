@@ -1,7 +1,7 @@
 import express from 'express';
 import http from 'http';
 
-import { AniListClient, AniListSdk } from './modules/anilist';
+import { AniListClient } from './modules/anilist';
 import * as routes from './routes';
 
 // THIS FILE IS THE GENERATED FILE
@@ -10,7 +10,6 @@ import { getSdk } from './__generated__/sdk';
 const app = express();
 
 app.set('AniListClient', AniListClient);
-app.set('AniListSdk', AniListSdk);
 
 // Express configuration
 app.set("port", process.env.PORT || 3000);
