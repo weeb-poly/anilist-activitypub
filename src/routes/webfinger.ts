@@ -1,9 +1,18 @@
 import express from 'express';
 import { GraphQLClient } from 'graphql-request';
 
-import { getSdk } from '../__generated__/sdk';
+import { gql } from '../__generated__/gql';
 
 const router = express.Router();
+
+const getUserWebFinger = gql(/* GraphQL */ `
+  query getUserWebFinger($id: Int!) {
+    User (id: $id) {
+      id
+      siteUrl
+    }
+  }
+`);
 
 router.get('/', async (req, res) => {
   const hostname = req.hostname;
@@ -12,27 +21,26 @@ router.get('/', async (req, res) => {
 
   if (!resource.startsWith('acct:') || !resource.endsWith(`@${hostname}`)) {
     return res.status(400)
-              .send('Bad request. Please make sure "acct:USER@DOMAIN" is what you are sending as the "resource" query parameter.');
+              .send('Invalid resource');
   }
 
   const uid = parseInt(resource.slice(5, -1-hostname.length));
 
   if (Number.isNaN(uid)) {
     return res.status(400)
-              .send('Bad request. Please make sure "acct:USER@DOMAIN" is what you are sending as the "resource" query parameter.');
+              .send('Invalid User ID');
   }
 
   const AniListClient = req.app.get('AniListClient') as GraphQLClient;
-  const AniListSdk = getSdk(AniListClient);
 
-  const data = await AniListSdk.getUserWebFinger({ id: uid }).catch(err => {
+  const data = await AniListClient.request(getUserWebFinger, { id: uid }).catch(err => {
     console.error(err);
     return { User: null };
   });
 
   if (data.User === null) {
     return res.status(400)
-              .send('No User Found.');
+              .send('No User Found');
   }
 
   const result = {

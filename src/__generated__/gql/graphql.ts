@@ -1,6 +1,5 @@
-import { GraphQLClient } from 'graphql-request';
-import * as Dom from 'graphql-request/dist/types.dom';
-import gql from 'graphql-tag';
+/* eslint-disable */
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -13,7 +12,9 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** ISO 3166-1 alpha-2 country code */
   CountryCode: any;
+  /** 8 digit long date integer (YYYYMMDD). Unknown dates represented by 0. E.g. 2016: 20160000, May 1976: 19760500 */
   FuzzyDateInt: any;
   Json: any;
 };
@@ -4713,129 +4714,9 @@ export type GetUserWebFingerQueryVariables = Exact<{
 export type GetUserWebFingerQuery = { __typename?: 'Query', User: { __typename?: 'User', id: number, siteUrl: string | null } | null };
 
 
-export const GetActivityDocument = gql`
-    query getActivity($id: Int!) {
-  Activity(id: $id) {
-    __typename
-    ... on TextActivity {
-      id
-      siteUrl
-    }
-    ... on ListActivity {
-      id
-      siteUrl
-    }
-    ... on MessageActivity {
-      id
-      siteUrl
-    }
-  }
-}
-    `;
-export const GetUserPersonDocument = gql`
-    query getUserPerson($id: Int!) {
-  User(id: $id) {
-    id
-    name
-    avatar {
-      large
-    }
-    bannerImage
-  }
-}
-    `;
-export const GetUserFollowingDocument = gql`
-    query getUserFollowing($id: Int!, $page: Int) {
-  Page(page: $page) {
-    pageInfo {
-      total
-      currentPage
-      hasNextPage
-    }
-    following(userId: $id) {
-      id
-    }
-  }
-}
-    `;
-export const GetUserFollowersDocument = gql`
-    query getUserFollowers($id: Int!, $page: Int) {
-  Page(page: $page) {
-    pageInfo {
-      total
-      currentPage
-      hasNextPage
-    }
-    followers(userId: $id) {
-      id
-    }
-  }
-}
-    `;
-export const GetUserOutboxDocument = gql`
-    query getUserOutbox($id: Int!, $page: Int) {
-  Page(page: $page) {
-    pageInfo {
-      total
-      currentPage
-      lastPage
-      hasNextPage
-    }
-    activities(userId: $id, sort: ID_DESC) {
-      __typename
-      ... on TextActivity {
-        id
-        siteUrl
-        createdAt
-      }
-      ... on ListActivity {
-        id
-        siteUrl
-        createdAt
-      }
-      ... on MessageActivity {
-        id
-        siteUrl
-        createdAt
-      }
-    }
-  }
-}
-    `;
-export const GetUserWebFingerDocument = gql`
-    query getUserWebFinger($id: Int!) {
-  User(id: $id) {
-    id
-    siteUrl
-  }
-}
-    `;
-
-export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
-
-
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType) => action();
-
-export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
-  return {
-    getActivity(variables: GetActivityQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetActivityQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetActivityQuery>(GetActivityDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getActivity', 'query');
-    },
-    getUserPerson(variables: GetUserPersonQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserPersonQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserPersonQuery>(GetUserPersonDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserPerson', 'query');
-    },
-    getUserFollowing(variables: GetUserFollowingQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserFollowingQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserFollowingQuery>(GetUserFollowingDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserFollowing', 'query');
-    },
-    getUserFollowers(variables: GetUserFollowersQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserFollowersQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserFollowersQuery>(GetUserFollowersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserFollowers', 'query');
-    },
-    getUserOutbox(variables: GetUserOutboxQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserOutboxQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserOutboxQuery>(GetUserOutboxDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserOutbox', 'query');
-    },
-    getUserWebFinger(variables: GetUserWebFingerQueryVariables, requestHeaders?: Dom.RequestInit["headers"]): Promise<GetUserWebFingerQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetUserWebFingerQuery>(GetUserWebFingerDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getUserWebFinger', 'query');
-    }
-  };
-}
-export type Sdk = ReturnType<typeof getSdk>;
+export const GetActivityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getActivity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Activity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextActivity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteUrl"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ListActivity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteUrl"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MessageActivity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteUrl"}}]}}]}}]}}]} as unknown as DocumentNode<GetActivityQuery, GetActivityQueryVariables>;
+export const GetUserPersonDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getUserPerson"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"User"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"large"}}]}},{"kind":"Field","name":{"kind":"Name","value":"bannerImage"}}]}}]}}]} as unknown as DocumentNode<GetUserPersonQuery, GetUserPersonQueryVariables>;
+export const GetUserFollowingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getUserFollowing"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Page"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"following"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserFollowingQuery, GetUserFollowingQueryVariables>;
+export const GetUserFollowersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getUserFollowers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Page"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"followers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<GetUserFollowersQuery, GetUserFollowersQueryVariables>;
+export const GetUserOutboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getUserOutbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Page"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"lastPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"activities"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"EnumValue","value":"ID_DESC"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TextActivity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ListActivity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MessageActivity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteUrl"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetUserOutboxQuery, GetUserOutboxQueryVariables>;
+export const GetUserWebFingerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getUserWebFinger"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"User"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"siteUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserWebFingerQuery, GetUserWebFingerQueryVariables>;

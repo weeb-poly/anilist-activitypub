@@ -1,11 +1,23 @@
 import express from 'express';
-
 import { GraphQLClient } from 'graphql-request';
 
-import { getSdk } from '../__generated__/sdk';
-
+import { gql } from '../__generated__/gql';
 
 const router = express.Router();
+
+
+const getUserPerson = gql(/* GraphQL */ `
+  query getUserPerson($id: Int!) {
+    User (id: $id) {
+      id
+      name
+      avatar {
+        large
+      }
+      bannerImage
+    }
+  }
+`);
 
 router.get('/:uid', async (req, res) => {
   if (req.accepts('text/html')) {
@@ -24,9 +36,8 @@ router.get('/:uid', async (req, res) => {
   }
 
   const AniListClient = req.app.get('AniListClient') as GraphQLClient;
-  const AniListSdk = getSdk(AniListClient);
 
-  const data = await AniListSdk.getUserPerson({ id: uid }).catch(err => {
+  const data = await AniListClient.request(getUserPerson, { id: uid }).catch(err => {
     console.error(err);
     return { User: null };
   });
@@ -65,6 +76,23 @@ router.get('/:uid', async (req, res) => {
   return res.type('application/activity+json').json(result);
 });
 
+
+
+const getUserFollowing = gql(/* GraphQL */ `
+  query getUserFollowing($id: Int!, $page: Int) {
+    Page(page: $page) {
+      pageInfo {
+        total
+        currentPage
+        hasNextPage
+      }
+      following(userId: $id) {
+        id
+      }
+    }
+  }
+`);
+
 router.get('/:uid/social/following', async (req, res) => {
   if (req.accepts('text/html')) {
     // Redirect to AniList (no validation on our side)
@@ -86,9 +114,8 @@ router.get('/:uid/social/following', async (req, res) => {
   const pageNum = (req.query.page !== undefined) ? parseInt(req.query.page as string) : null;
 
   const AniListClient = req.app.get('AniListClient') as GraphQLClient;
-  const AniListSdk = getSdk(AniListClient);
 
-  const data = await AniListSdk.getUserFollowing({ id: uid, page: pageNum }).catch(err => {
+  const data = await AniListClient.request(getUserFollowing, { id: uid, page: pageNum }).catch(err => {
     console.error(err);
     return { Page: null };
   });
@@ -121,6 +148,22 @@ router.get('/:uid/social/following', async (req, res) => {
   return res.type('application/activity+json').json(result);
 });
 
+
+const getUserFollowers = gql(/* GraphQL */ `
+  query getUserFollowers($id: Int!, $page: Int) {
+    Page(page: $page) {
+      pageInfo {
+        total
+        currentPage
+        hasNextPage
+      }
+      followers(userId: $id) {
+        id
+      }
+    }
+  }
+`);
+
 router.get('/:uid/social/followers', async (req, res) => {
   if (req.accepts('text/html')) {
     // Redirect to AniList (no validation on our side)
@@ -142,9 +185,8 @@ router.get('/:uid/social/followers', async (req, res) => {
   const pageNum = (req.query.page !== undefined) ? parseInt(req.query.page as string) : null;
 
   const AniListClient = req.app.get('AniListClient') as GraphQLClient;
-  const AniListSdk = getSdk(AniListClient);
 
-  const data = await AniListSdk.getUserFollowers({ id: uid, page: pageNum }).catch(err => {
+  const data = await AniListClient.request(getUserFollowers, { id: uid, page: pageNum }).catch(err => {
     console.error(err);
     return { Page: null };
   });
@@ -194,6 +236,41 @@ router.post('/:uid/social/inbox', async (req, res) => {
 });
 
 
+
+const getUserOutbox = gql(/* GraphQL */ `
+  query getUserOutbox($id: Int!, $page: Int) {
+    Page(page: $page) {
+      pageInfo {
+        total
+        currentPage
+        lastPage
+        hasNextPage
+      }
+      activities(
+        userId: $id,
+        sort: ID_DESC
+      ) {
+        __typename
+        ... on TextActivity {
+          id
+          siteUrl
+          createdAt
+        }
+        ... on ListActivity {
+          id
+          siteUrl
+          createdAt
+        }
+        ... on MessageActivity {
+          id
+          siteUrl
+          createdAt
+        }
+      }
+    }
+  }
+`);
+
 router.get('/:uid/social/outbox', async (req, res) => {
   if (req.accepts('text/html')) {
     // Redirect to AniList (no validation on our side)
@@ -226,9 +303,8 @@ router.get('/:uid/social/outbox', async (req, res) => {
   const pageNum = (req.query.page !== undefined) ? parseInt(req.query.page as string) : null;
 
   const AniListClient = req.app.get('AniListClient') as GraphQLClient;
-  const AniListSdk = getSdk(AniListClient);
 
-  const data = await AniListSdk.getUserOutbox({ id: uid, page: pageNum });
+  const data = await AniListClient.request(getUserOutbox, { id: uid, page: pageNum });
 
   const totalItems = data.Page?.pageInfo?.total ?? NaN;
   const lastPage = data.Page?.pageInfo?.lastPage ?? NaN;

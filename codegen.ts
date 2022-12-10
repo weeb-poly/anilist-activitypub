@@ -7,15 +7,13 @@ const config: CodegenConfig = {
     "./schemas/anilist.graphql": {
       plugins: ["schema-ast"]
     },
-    "./src/__generated__/sdk.ts": {
+    "./src/__generated__/gql/": {
       documents: [
-        "src/gql/**/*.gql"
+        "src/**/*.ts",
+        "!src/__generated__/gql/**/*"
       ],
-      plugins: [
-        "typescript",
-        "typescript-operations",
-        "typescript-graphql-request"
-      ],
+      preset: 'gql-tag-operations-preset',
+      plugins: [],
       config: {
         avoidOptionals: true
       }
