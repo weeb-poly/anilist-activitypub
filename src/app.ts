@@ -4,9 +4,6 @@ import http from 'http';
 import { AniListClient } from './modules/anilist';
 import * as routes from './routes';
 
-// THIS FILE IS THE GENERATED FILE
-import { getSdk } from './__generated__/sdk';
-
 const app = express();
 
 app.set('AniListClient', AniListClient);
