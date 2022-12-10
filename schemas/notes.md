@@ -30,6 +30,41 @@ AniList's `ActivityReply` isn't treated as an Activity (no reply threads or anyt
 
 I have no idea of the complexity of the AniList backend. These are just my suggestions to make things easier for me (and specifically me).
 
+
+# Null Arrays should be Empty Arrays
+
+Queries should not be returning null arrays. It's as simple as that. Here's an example:
+
+```graphql
+type Page {
+  // ...
+  followers(
+    """The order the results will be returned in"""
+    sort: [UserSort]
+
+    """User id of the follower/followed"""
+    userId: Int!
+  ): [User]
+  // ...
+}
+```
+
+This schema should be formatted like this:
+
+```graphql
+type Page {
+  // ...
+  followers(
+    """The order the results will be returned in"""
+    sort: [UserSort]
+
+    """User id of the follower/followed"""
+    userId: Int!
+  ): [User!]!
+  // ...
+}
+```
+
 ## `interface Activity`
 
 Creating an `interface` for all `Activity` types makes it a lot easier to query common attributes without needing to resolve types.
@@ -110,6 +145,9 @@ query getActivityNew($id: Int!) {
 }
 ```
 
+# Less Nullable Types in Schema
+
+The schema shouldn't have as many nullable types as it does. Each situation where the value is null should be documented.
 
 ## `Page.activities(min_id: 0)`
 

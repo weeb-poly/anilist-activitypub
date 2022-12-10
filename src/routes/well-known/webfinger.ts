@@ -1,9 +1,10 @@
-import express from 'express';
-import { GraphQLClient } from 'graphql-request';
+import { Hono } from 'hono';
 
-import { gql } from '../__generated__/gql';
+import { AniListClient } from '../../modules/anilist';
 
-const router = express.Router();
+import { gql } from '../../__generated__/gql';
+
+const router = new Hono();
 
 const getUserWebFinger = gql(/* GraphQL */ `
   query getUserWebFinger($id: Int!) {
@@ -14,24 +15,26 @@ const getUserWebFinger = gql(/* GraphQL */ `
   }
 `);
 
-router.get('/', async (req, res) => {
-  const hostname = req.hostname;
-
-  const resource = (req.query.resource ?? "") as string;
+router.get('/.well-known/webfinger', async (c) => {
+  const hostname = c.req.headers.get('Host') ?? "";
+  // NOTE: query is not part of Fetch API
+  const resource = c.req.query('resource');
 
   if (!resource.startsWith('acct:') || !resource.endsWith(`@${hostname}`)) {
-    return res.status(400)
-              .send('Invalid resource');
+    return new Response(
+      'Invalid resource',
+      { status: 400 }
+    );
   }
 
   const uid = parseInt(resource.slice(5, -1-hostname.length));
 
   if (Number.isNaN(uid)) {
-    return res.status(400)
-              .send('Invalid User ID');
+    return new Response(
+      'Invalid User ID',
+      { status: 400 }
+    );
   }
-
-  const AniListClient = req.app.get('AniListClient') as GraphQLClient;
 
   const data = await AniListClient.request(getUserWebFinger, { id: uid }).catch(err => {
     console.error(err);
@@ -39,8 +42,10 @@ router.get('/', async (req, res) => {
   });
 
   if (data.User === null) {
-    return res.status(400)
-              .send('No User Found');
+    return new Response(
+      'No User Found',
+      { status: 400 }
+    );
   }
 
   const result = {
@@ -60,7 +65,10 @@ router.get('/', async (req, res) => {
     ].filter(e => e !== null)
   };
 
-  return res.type('application/jrd+json').json(result);
+  // Note: There is no way to override the content-type of `c.json`
+  const res = c.json(result);
+  res.headers.set('Content-Type', 'application/jrd+json');
+  return res;
 });
 
-export { router };
+export default router;

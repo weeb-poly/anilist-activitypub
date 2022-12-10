@@ -1,0 +1,7 @@
+name = "anilist"
+main = "src/index.ts"
+compatibility_date = "2022-12-10"
+
+routes = [
+	{ pattern = "anilist.wpi.moe", custom_domain = true, zone_name = "wpi.moe" }
+]
