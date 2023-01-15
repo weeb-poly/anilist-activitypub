@@ -1,5 +1,7 @@
 # ActivityPub for AniList
 
+***NOTE:*** While this was a cool idea, I'm holding off on the project in hopes that the AniList schema gets updated so I don't need to handle as many edge cases.
+
 This Proof of Concept Bridge will be Read-Only and will avoid storing any data.
 
 This won't support most AniList features due to limitations of the AniList API (see `schemas/notes.md`).
